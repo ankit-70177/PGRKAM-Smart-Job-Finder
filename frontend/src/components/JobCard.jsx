@@ -1,12 +1,8 @@
-
-function JobCard({ job }) {
+function JobCard({ job, isSaved, onToggleSave, onViewDetails }) {
   return (
     <article className="job-card">
       <div className="job-card-top">
-        <div className="company-logo">
-          {job.company.charAt(0)}
-        </div>
-
+        <div className="company-logo">{job.company.charAt(0)}</div>
         <span className="job-type">{job.type}</span>
       </div>
 
@@ -20,14 +16,24 @@ function JobCard({ job }) {
 
       <p className="job-description">{job.description}</p>
 
-      <a
-        className="apply-link"
-        href={job.applyUrl}
-        target="_blank"
-        rel="noreferrer"
-      >
-        View Opportunity ↗
-      </a>
+      <div className="job-card-actions">
+        <button
+          type="button"
+          className="apply-link"
+          onClick={() => onViewDetails(job)}
+        >
+          View Opportunity ↗
+        </button>
+
+        <button
+          type="button"
+          className={`save-button ${isSaved ? "saved" : ""}`}
+          onClick={() => onToggleSave(job.id)}
+          aria-label={isSaved ? "Remove saved job" : "Save job"}
+        >
+          {isSaved ? "♥ Saved" : "♡ Save"}
+        </button>
+      </div>
     </article>
   );
 }

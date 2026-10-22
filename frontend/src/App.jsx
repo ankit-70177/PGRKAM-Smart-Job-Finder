@@ -1,50 +1,94 @@
+
 import "./App.css";
-import JobCard from "./components/JobCard";
 import { useState } from "react";
+import JobCard from "./components/JobCard";
 
 function App() {
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [savedJobIds, setSavedJobIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem("pgrkam-saved-jobs");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+
   const jobs = [
-  {
-    id: 1,
-    title: "Junior Web Developer",
-    company: "Punjab Tech Solutions",
-    type: "Full-time",
-    location: "Mohali, Punjab",
-    salary: "₹3–5 LPA",
-    description: "Build and maintain modern web applications.",
-    applyUrl: "https://example.com/jobs",
-  },
-  {
-    id: 2,
-    title: "React Developer Intern",
-    company: "Digital Punjab",
-    type: "Internship",
-    location: "Chandigarh",
-    salary: "₹12,000/month",
-    description: "Learn React while contributing to real projects.",
-    applyUrl: "https://example.com/internships",
-  },
-  {
-    id: 3,
-    title: "Technical Support Associate",
-    company: "North India Services",
-    type: "Full-time",
-    location: "Ludhiana, Punjab",
-    salary: "₹2.5–4 LPA",
-    description: "Help customers troubleshoot technical issues.",
-    applyUrl: "https://example.com/careers",
-  },
-];
-const filteredJobs = jobs.filter((job) => {
+    {
+      id: 1,
+      title: "Junior Web Developer",
+      company: "Punjab Tech Solutions",
+      type: "Full-time",
+      location: "Mohali, Punjab",
+      salary: "₹3–5 LPA",
+      description: "Build and maintain modern web applications.",
+      applyUrl: "https://example.com/jobs",
+    },
+    {
+      id: 2,
+      title: "React Developer Intern",
+      company: "Digital Punjab",
+      type: "Internship",
+      location: "Chandigarh",
+      salary: "₹12,000/month",
+      description: "Learn React while contributing to real projects.",
+      applyUrl: "https://example.com/internships",
+    },
+    {
+      id: 3,
+      title: "Technical Support Associate",
+      company: "North India Services",
+      type: "Full-time",
+      location: "Ludhiana, Punjab",
+      salary: "₹2.5–4 LPA",
+      description: "Help customers troubleshoot technical issues.",
+      applyUrl: "https://example.com/careers",
+    },
+  ];
+
+  function toggleSavedJob(jobId) {
+    setSavedJobIds((previousIds) => {
+      const nextIds = previousIds.includes(jobId)
+        ? previousIds.filter((id) => id !== jobId)
+        : [...previousIds, jobId];
+
+      try {
+        localStorage.setItem(
+          "pgrkam-saved-jobs",
+          JSON.stringify(nextIds)
+        );
+      } catch (error) {
+        console.error("Could not save jobs:", error);
+      }
+
+      return nextIds;
+    });
+  }
+
+  const filteredJobs = jobs.filter((job) => {
   const query = searchTerm.toLowerCase().trim();
 
-  return (
+  const matchesSearch =
     job.title.toLowerCase().includes(query) ||
     job.company.toLowerCase().includes(query) ||
-    job.location.toLowerCase().includes(query)
-  );
+    job.location.toLowerCase().includes(query);
+
+  const matchesSaved =
+    !showSavedOnly || savedJobIds.includes(job.id);
+
+  const matchesCategory =
+    selectedCategory === "All" ||
+    job.type === selectedCategory;
+
+  return matchesSearch && matchesSaved && matchesCategory;
 });
+  
+
   return (
     <div className="app">
       <aside className="sidebar">
@@ -59,23 +103,48 @@ const filteredJobs = jobs.filter((job) => {
         <nav className="navigation">
           <p className="nav-label">MENU</p>
 
-          <button className="nav-item active">
+          <button
+            className={`nav-item ${!showSavedOnly ? "active" : ""}`}
+            onClick={() => setShowSavedOnly(false)}
+          >
             <span>▦</span> Dashboard
           </button>
 
-          <button className="nav-item">
+          <button
+            className="nav-item"
+            onClick={() => {
+              setShowSavedOnly(false);
+              document.querySelector(".jobs-section")?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
             <span>⌕</span> Find Jobs
           </button>
 
-          <button className="nav-item">
-            <span>♡</span> Saved Jobs
+          <button
+            className={`nav-item ${showSavedOnly ? "active" : ""}`}
+            onClick={() => setShowSavedOnly((current) => !current)}
+          >
+            <span>♡</span>
+            {showSavedOnly ? "All Jobs" : "Saved Jobs"}
           </button>
 
-          <button className="nav-item">
+          <button
+            className="nav-item"
+            onClick={() =>
+              alert("Nearby opportunities will be available in the next feature.")
+            }
+          >
             <span>◉</span> Nearby Opportunities
           </button>
 
-          <button className="nav-item">
+          <button
+            className="nav-item"
+            onClick={() =>
+              alert("Skill development programs will be added in the next feature.")
+            }
+          >
             <span>▤</span> Skill Development
           </button>
         </nav>
@@ -104,40 +173,43 @@ const filteredJobs = jobs.filter((job) => {
 
         <section className="welcome">
           <div>
-            <p className="eyebrow">YOUR NEXT OPPORTUNITY STARTS HERE</p>
+            <p className="eyebrow">
+              YOUR NEXT OPPORTUNITY STARTS HERE
+            </p>
             <h1>Find work that moves you forward.</h1>
             <p>
               Explore jobs, discover local opportunities, and build
               skills for your future.
             </p>
           </div>
-          <form
-  className="job-search"
-  onSubmit={(event) => event.preventDefault()}
->
-  <input
-    type="search"
-    placeholder="Search by job title, company, or location..."
-    value={searchTerm}
-    onChange={(event) => setSearchTerm(event.target.value)}
-    aria-label="Search jobs by title, company, or location"
-  />
 
-  <button type="submit">Search Jobs</button>
-</form>
+          <form
+            className="job-search"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <input
+              type="search"
+              placeholder="Search by job title, company, or location..."
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              aria-label="Search jobs by title, company, or location"
+            />
+
+            <button type="submit">Search Jobs</button>
+          </form>
         </section>
 
         <section className="stats">
           <article className="stat-card">
             <span>Available Jobs</span>
-            <h2>120+</h2>
+            <h2>{jobs.length}</h2>
             <p>Explore opportunities</p>
           </article>
 
           <article className="stat-card">
-            <span>Nearby Jobs</span>
-            <h2>24</h2>
-            <p>Discover your area</p>
+            <span>Saved Jobs</span>
+            <h2>{savedJobIds.length}</h2>
+            <p>Your bookmarked opportunities</p>
           </article>
 
           <article className="stat-card">
@@ -158,39 +230,118 @@ const filteredJobs = jobs.filter((job) => {
           <article className="quick-card">
             <div className="quick-icon">⌕</div>
             <h3>Find a Job</h3>
-            <p>Browse employment opportunities matching your interests.</p>
+            <p>
+              Browse employment opportunities matching your interests.
+            </p>
           </article>
 
           <article className="quick-card">
             <div className="quick-icon">◎</div>
             <h3>Jobs Near You</h3>
-            <p>Explore opportunities based on your location.</p>
+            <p>
+              Explore opportunities based on your location.
+            </p>
           </article>
 
           <article className="quick-card">
             <div className="quick-icon">↗</div>
             <h3>Build Your Skills</h3>
-            <p>Discover training and career development programs.</p>
+            <p>
+              Discover training and career development programs.
+            </p>
           </article>
         </section>
-        <section className="jobs-section">
-  <div className="section-heading">
-    <h2>Featured Opportunities</h2>
-    <p>Explore roles that could be your next career move.</p>
-  </div>
 
-  <div className="jobs-grid">
-    {filteredJobs.length > 0 ? (
-  filteredJobs.map((job) => (
-    <JobCard key={job.id} job={job} />
-  ))
-) : (
-  <p className="no-results">
-    No jobs found. Try a different search.
-  </p>
-)}
+        <section className="jobs-section">
+          <div className="section-heading">
+            <div>
+              <h2>
+                {showSavedOnly
+                  ? "Your Saved Jobs"
+                  : "Featured Opportunities"}
+              </h2>
+              <p>
+                {showSavedOnly
+                  ? "Opportunities you've bookmarked."
+                  : "Explore roles that could be your next career move."}
+              </p>
+            </div>
+          </div>
+
+          <div className="category-filters">
+  {["All", "Full-time", "Internship"].map((category) => (
+    <button
+      key={category}
+      className={`category-button ${
+        selectedCategory === category ? "active" : ""
+      }`}
+      onClick={() => setSelectedCategory(category)}
+    >
+      {category}
+    </button>
+  ))}
+</div>
+
+          <div className="jobs-grid">
+            {filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  isSaved={savedJobIds.includes(job.id)}
+                  onToggleSave={toggleSavedJob}
+                  onViewDetails={setSelectedJob}
+                />
+              ))
+            ) : (
+              <p className="no-results">
+                {showSavedOnly
+                  ? "No saved jobs yet. Save a job to see it here."
+                  : "No jobs found. Try a different search."}
+              </p>
+            )}
+          </div>
+        </section>
+        {selectedJob && (
+  <div className="job-modal-overlay" onClick={() => setSelectedJob(null)}>
+    <div
+      className="job-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <button
+        className="modal-close"
+        onClick={() => setSelectedJob(null)}
+      >
+        ✕
+      </button>
+
+      <span className="job-type">{selectedJob.type}</span>
+      <h2>{selectedJob.title}</h2>
+      <p className="company-name">{selectedJob.company}</p>
+
+      <div className="job-details">
+        <span>📍 {selectedJob.location}</span>
+        <span>💰 {selectedJob.salary}</span>
+      </div>
+
+      <h3>About this opportunity</h3>
+      <p>{selectedJob.description}</p>
+
+      <a
+        className="apply-link"
+        href={selectedJob.applyUrl}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Apply Now ↗
+      </a>
+
+      <p className="modal-note">
+        Demo opportunity — verify the employer and application link before applying.
+      </p>
+    </div>
   </div>
-</section>
+)}
       </main>
     </div>
   );
