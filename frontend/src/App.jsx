@@ -4,6 +4,7 @@ import { useState } from "react";
 import JobCard from "./components/JobCard";
 
 function App() {
+  const [selectedLocation, setSelectedLocation] = useState("All Punjab");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
@@ -54,6 +55,30 @@ function App() {
     },
   ];
 
+  const skillPrograms = [
+  {
+    id: 1,
+    title: "Web Development Fundamentals",
+    provider: "Demo Training Centre",
+    duration: "6 weeks",
+    skills: "HTML, CSS, JavaScript",
+  },
+  {
+    id: 2,
+    title: "React Development",
+    provider: "Demo Technology Academy",
+    duration: "4 weeks",
+    skills: "React, JavaScript",
+  },
+  {
+    id: 3,
+    title: "IT Support Essentials",
+    provider: "Demo Skills Institute",
+    duration: "3 weeks",
+    skills: "Networking, Troubleshooting",
+  },
+];
+
   function toggleSavedJob(jobId) {
     setSavedJobIds((previousIds) => {
       const nextIds = previousIds.includes(jobId)
@@ -73,33 +98,41 @@ function App() {
     });
   }
 
-  function addCandidateSkill(event) {
+ function addCandidateSkill(event) {
   event.preventDefault();
 
   const skill = skillInput.trim();
 
   if (!skill) return;
 
-  const alreadyExists = candidateSkills.some(
-    (existingSkill) =>
-      existingSkill.toLowerCase() === skill.toLowerCase()
+  const existingSkills = JSON.parse(
+    localStorage.getItem("pgrkam-candidate-skills") || "[]"
+  );
+
+  const alreadyExists = existingSkills.some(
+    (item) => item.toLowerCase() === skill.toLowerCase()
   );
 
   if (alreadyExists) {
+    setCandidateSkills(existingSkills);
     setSkillInput("");
     return;
   }
 
-  const updatedSkills = [...candidateSkills, skill];
+  const updatedSkills = [...existingSkills, skill];
 
-  setCandidateSkills(updatedSkills);
+  try {
+    localStorage.setItem(
+      "pgrkam-candidate-skills",
+      JSON.stringify(updatedSkills)
+    );
 
-  localStorage.setItem(
-    "pgrkam-candidate-skills",
-    JSON.stringify(updatedSkills)
-  );
-
-  setSkillInput("");
+    setCandidateSkills(updatedSkills);
+    setSkillInput("");
+  } catch (error) {
+    console.error("Could not save skills:", error);
+    alert("Could not save the skill.");
+  }
 }
 
 function removeCandidateSkill(skillToRemove) {
@@ -131,10 +164,17 @@ function getJobMatch(job) {
   );
 }
 
-  const [candidateSkills, setCandidateSkills] = useState(() => {
+const [candidateSkills, setCandidateSkills] = useState(() => {
   try {
-    return JSON.parse(localStorage.getItem("pgrkam-candidate-skills")) || [];
-  } catch {
+    const storedSkills = localStorage.getItem("pgrkam-candidate-skills");
+
+    if (!storedSkills) return [];
+
+    const parsedSkills = JSON.parse(storedSkills);
+
+    return Array.isArray(parsedSkills) ? parsedSkills : [];
+  } catch (error) {
+    console.error("Could not load saved skills:", error);
     return [];
   }
 });
@@ -156,7 +196,11 @@ const [skillInput, setSkillInput] = useState("");
     selectedCategory === "All" ||
     job.type === selectedCategory;
 
-  return matchesSearch && matchesSaved && matchesCategory;
+  const matchesLocation =
+  selectedLocation === "All Punjab" ||
+  job.location.toLowerCase().includes(selectedLocation.toLowerCase());
+
+  return matchesSearch && matchesSaved && matchesCategory && matchesLocation;
 });
   
 
@@ -268,6 +312,35 @@ const [skillInput, setSkillInput] = useState("");
 
             <button type="submit">Search Jobs</button>
           </form>
+
+            <button
+              type="button"
+              onClick={() => {
+                alert(
+                  "New Job Opportunity!\n\n" +
+                  "Junior Web Developer\n" +
+                  "Location: Mohali, Punjab\n" +
+                  "Salary: ₹3–5 LPA"
+                );
+              }}
+            >
+              Test Job Notification
+              </button>
+          
+          <div className="location-filter">
+  <label htmlFor="job-location">Find jobs by location</label>
+
+  <select
+    id="job-location"
+    value={selectedLocation}
+    onChange={(event) => setSelectedLocation(event.target.value)}
+  >
+    <option value="All Punjab">All Punjab</option>
+    <option value="Mohali">Mohali</option>
+    <option value="Chandigarh">Chandigarh</option>
+    <option value="Ludhiana">Ludhiana</option>
+  </select>
+</div>
         </section>
 
             <section className="skills-section">
@@ -365,6 +438,38 @@ const [skillInput, setSkillInput] = useState("");
             </p>
           </article>
         </section>
+
+          <section className="programs-section">
+  <div className="section-heading">
+    <div>
+      <h2>Skill Development Programs</h2>
+      <p>Build skills that can help you prepare for new opportunities.</p>
+    </div>
+  </div>
+
+  <div className="programs-grid">
+    {skillPrograms.map((program) => (
+      <article className="program-card" key={program.id}>
+        <div className="program-icon">↗</div>
+        <h3>{program.title}</h3>
+        <p className="company-name">{program.provider}</p>
+        <p>Duration: {program.duration}</p>
+        <p>Skills: {program.skills}</p>
+        <button
+          type="button"
+          className="program-button"
+          onClick={() =>
+            alert(
+              `${program.title}\n\nProvider: ${program.provider}\nDuration: ${program.duration}\n\nThis is a demonstration program.`
+            )
+          }
+        >
+          View Program
+        </button>
+      </article>
+    ))}
+  </div>
+</section>
 
         <section className="jobs-section">
           <div className="section-heading">
