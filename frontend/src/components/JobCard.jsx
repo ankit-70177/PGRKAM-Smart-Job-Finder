@@ -1,4 +1,4 @@
-function JobCard({ job, isSaved, onToggleSave, onViewDetails }) {
+function JobCard({ job, isSaved, onToggleSave, onViewDetails,jobMatch }) {
   return (
     <article className="job-card">
       <div className="job-card-top">
@@ -15,6 +15,20 @@ function JobCard({ job, isSaved, onToggleSave, onViewDetails }) {
       </div>
 
       <p className="job-description">{job.description}</p>
+
+      <div className="job-match">
+  <div className="job-match-label">
+    <span>Skill Match</span>
+    <strong>{jobMatch}%</strong>
+  </div>
+
+  <div className="job-match-track">
+    <div
+      className="job-match-fill"
+      style={{ width: `${jobMatch}%` }}
+    />
+  </div>
+</div>
 
       <div className="job-card-actions">
         <button

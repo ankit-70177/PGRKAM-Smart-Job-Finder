@@ -28,6 +28,7 @@ function App() {
       salary: "₹3–5 LPA",
       description: "Build and maintain modern web applications.",
       applyUrl: "https://example.com/jobs",
+      skills: ["HTML", "CSS", "JavaScript", "React"],
     },
     {
       id: 2,
@@ -38,6 +39,7 @@ function App() {
       salary: "₹12,000/month",
       description: "Learn React while contributing to real projects.",
       applyUrl: "https://example.com/internships",
+      skills: ["React", "JavaScript", "HTML"],
     },
     {
       id: 3,
@@ -48,6 +50,7 @@ function App() {
       salary: "₹2.5–4 LPA",
       description: "Help customers troubleshoot technical issues.",
       applyUrl: "https://example.com/careers",
+      skills: ["Communication", "Troubleshooting", "Networking"],
     },
   ];
 
@@ -69,6 +72,74 @@ function App() {
       return nextIds;
     });
   }
+
+  function addCandidateSkill(event) {
+  event.preventDefault();
+
+  const skill = skillInput.trim();
+
+  if (!skill) return;
+
+  const alreadyExists = candidateSkills.some(
+    (existingSkill) =>
+      existingSkill.toLowerCase() === skill.toLowerCase()
+  );
+
+  if (alreadyExists) {
+    setSkillInput("");
+    return;
+  }
+
+  const updatedSkills = [...candidateSkills, skill];
+
+  setCandidateSkills(updatedSkills);
+
+  localStorage.setItem(
+    "pgrkam-candidate-skills",
+    JSON.stringify(updatedSkills)
+  );
+
+  setSkillInput("");
+}
+
+function removeCandidateSkill(skillToRemove) {
+  const updatedSkills = candidateSkills.filter(
+    (skill) => skill !== skillToRemove
+  );
+
+  setCandidateSkills(updatedSkills);
+
+  localStorage.setItem(
+    "pgrkam-candidate-skills",
+    JSON.stringify(updatedSkills)
+  );
+}
+
+function getJobMatch(job) {
+  if (candidateSkills.length === 0) return 0;
+
+  const candidateSkillSet = new Set(
+    candidateSkills.map((skill) => skill.toLowerCase())
+  );
+
+  const matchedSkills = job.skills.filter((skill) =>
+    candidateSkillSet.has(skill.toLowerCase())
+  );
+
+  return Math.round(
+    (matchedSkills.length / job.skills.length) * 100
+  );
+}
+
+  const [candidateSkills, setCandidateSkills] = useState(() => {
+  try {
+    return JSON.parse(localStorage.getItem("pgrkam-candidate-skills")) || [];
+  } catch {
+    return [];
+  }
+});
+
+const [skillInput, setSkillInput] = useState("");
 
   const filteredJobs = jobs.filter((job) => {
   const query = searchTerm.toLowerCase().trim();
@@ -199,6 +270,49 @@ function App() {
           </form>
         </section>
 
+            <section className="skills-section">
+  <div className="section-heading">
+    <div>
+      <h2>My Skills Profile</h2>
+      <p>Add your skills to prepare for personalized job recommendations.</p>
+    </div>
+  </div>
+
+  <form className="skills-form" onSubmit={addCandidateSkill}>
+    <input
+      type="text"
+      value={skillInput}
+      onChange={(event) => setSkillInput(event.target.value)}
+      placeholder="Enter a skill (e.g. React, Python)"
+      aria-label="Enter a skill"
+    />
+
+    <button type="submit">Add Skill</button>
+  </form>
+
+  <div className="skills-list">
+    {candidateSkills.length > 0 ? (
+      candidateSkills.map((skill) => (
+        <span className="skill-tag" key={skill}>
+          {skill}
+
+          <button
+            type="button"
+            onClick={() => removeCandidateSkill(skill)}
+            aria-label={`Remove ${skill}`}
+          >
+            ×
+          </button>
+        </span>
+      ))
+    ) : (
+      <p className="no-results">
+        No skills added yet. Add your first skill above.
+      </p>
+    )}
+  </div>
+</section>
+
         <section className="stats">
           <article className="stat-card">
             <span>Available Jobs</span>
@@ -291,6 +405,7 @@ function App() {
                   isSaved={savedJobIds.includes(job.id)}
                   onToggleSave={toggleSavedJob}
                   onViewDetails={setSelectedJob}
+                  jobMatch={getJobMatch(job)}
                 />
               ))
             ) : (
