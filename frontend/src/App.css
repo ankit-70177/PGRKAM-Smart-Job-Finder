@@ -319,3 +319,149 @@ button {
     padding: 24px;
   }
 }
+
+
+.jobs-section {
+  margin-top: 34px;
+}
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.job-card {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border: 1px solid #e9edf2;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.job-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.company-logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eaf5ef;
+  color: #176b48;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.job-type {
+  padding: 6px 9px;
+  border-radius: 20px;
+  background: #edf2ff;
+  color: #4259a5;
+  font-size: 11px;
+}
+
+.job-card h3 {
+  margin: 20px 0 6px;
+  font-size: 17px;
+}
+
+.company-name {
+  margin: 0;
+  color: #647184;
+  font-size: 13px;
+}
+
+.job-details {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 18px;
+  color: #566274;
+  font-size: 12px;
+}
+
+.job-description {
+  min-height: 58px;
+  color: #788596;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.apply-link {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 16px;
+  color: #176b48;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.apply-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1100px) {
+  .jobs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .jobs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.job-search {
+  display: flex;
+  gap: 10px;
+  max-width: 650px;
+  margin-top: 24px;
+}
+
+.job-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid #dce5df;
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: #182230;
+  font-size: 14px;
+}
+
+.job-search input:focus {
+  border-color: #a8d5bc;
+  box-shadow: 0 0 0 3px #ffffff30;
+}
+
+.job-search button {
+  padding: 14px 18px;
+  border: none;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #176b48;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.no-results {
+  color: #647184;
+  font-size: 14px;
+}
+
+@media (max-width: 500px) {
+  .job-search {
+    flex-direction: column;
+  }
+}

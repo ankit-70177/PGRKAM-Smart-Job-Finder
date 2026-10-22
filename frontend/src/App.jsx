@@ -1,7 +1,50 @@
-
 import "./App.css";
+import JobCard from "./components/JobCard";
+import { useState } from "react";
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const jobs = [
+  {
+    id: 1,
+    title: "Junior Web Developer",
+    company: "Punjab Tech Solutions",
+    type: "Full-time",
+    location: "Mohali, Punjab",
+    salary: "₹3–5 LPA",
+    description: "Build and maintain modern web applications.",
+    applyUrl: "https://example.com/jobs",
+  },
+  {
+    id: 2,
+    title: "React Developer Intern",
+    company: "Digital Punjab",
+    type: "Internship",
+    location: "Chandigarh",
+    salary: "₹12,000/month",
+    description: "Learn React while contributing to real projects.",
+    applyUrl: "https://example.com/internships",
+  },
+  {
+    id: 3,
+    title: "Technical Support Associate",
+    company: "North India Services",
+    type: "Full-time",
+    location: "Ludhiana, Punjab",
+    salary: "₹2.5–4 LPA",
+    description: "Help customers troubleshoot technical issues.",
+    applyUrl: "https://example.com/careers",
+  },
+];
+const filteredJobs = jobs.filter((job) => {
+  const query = searchTerm.toLowerCase().trim();
+
+  return (
+    job.title.toLowerCase().includes(query) ||
+    job.company.toLowerCase().includes(query) ||
+    job.location.toLowerCase().includes(query)
+  );
+});
   return (
     <div className="app">
       <aside className="sidebar">
@@ -68,6 +111,20 @@ function App() {
               skills for your future.
             </p>
           </div>
+          <form
+  className="job-search"
+  onSubmit={(event) => event.preventDefault()}
+>
+  <input
+    type="search"
+    placeholder="Search by job title, company, or location..."
+    value={searchTerm}
+    onChange={(event) => setSearchTerm(event.target.value)}
+    aria-label="Search jobs by title, company, or location"
+  />
+
+  <button type="submit">Search Jobs</button>
+</form>
         </section>
 
         <section className="stats">
@@ -116,6 +173,24 @@ function App() {
             <p>Discover training and career development programs.</p>
           </article>
         </section>
+        <section className="jobs-section">
+  <div className="section-heading">
+    <h2>Featured Opportunities</h2>
+    <p>Explore roles that could be your next career move.</p>
+  </div>
+
+  <div className="jobs-grid">
+    {filteredJobs.length > 0 ? (
+  filteredJobs.map((job) => (
+    <JobCard key={job.id} job={job} />
+  ))
+) : (
+  <p className="no-results">
+    No jobs found. Try a different search.
+  </p>
+)}
+  </div>
+</section>
       </main>
     </div>
   );
