@@ -18,7 +18,13 @@ function createWindow() {
     },
   });
 
+  if (app.isPackaged) {
+  mainWindow.loadFile(
+    path.join(__dirname, "../frontend/dist/index.html")
+  );
+} else {
   mainWindow.loadURL("http://localhost:5173");
+}
 }
 
 ipcMain.on("show-job-notification", (_event, jobTitle) => {

@@ -1,11 +1,33 @@
+
 {
+  "name": "pgrkam-smart-job-finder",
+  "version": "1.0.0",
   "main": "electron/main.js",
   "scripts": {
-  "start": "concurrently -k \"npm run dev --prefix frontend\" \"wait-on http://localhost:5173 && electron .\""
-},
+    "start": "concurrently -k \"npm run dev --prefix frontend\" \"wait-on http://localhost:5173 && electron .\"",
+    "build": "npm run build --prefix frontend",
+    "dist": "npm run build && electron-builder --mac dmg"
+  },
+  "build": {
+    "appId": "com.pgrkam.smartjobfinder",
+    "productName": "PGRKAM Smart Job Finder",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.business"
+    }
+  },
   "devDependencies": {
     "concurrently": "^10.0.6",
     "electron": "^44.9.0",
+    "electron-builder": "^26.15.3",
     "wait-on": "^9.5.1"
   }
 }
