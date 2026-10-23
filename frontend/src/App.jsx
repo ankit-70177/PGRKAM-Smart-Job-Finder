@@ -18,6 +18,7 @@ function App() {
   });
 
   const [showSavedOnly, setShowSavedOnly] = useState(false);
+  const [activeSection, setActiveSection] = useState("dashboard");
 
   const jobs = [
     {
@@ -28,7 +29,7 @@ function App() {
       location: "Mohali, Punjab",
       salary: "₹3–5 LPA",
       description: "Build and maintain modern web applications.",
-      applyUrl: "https://example.com/jobs",
+      applyUrl: "https://pgrkam.com/private-jobs",
       skills: ["HTML", "CSS", "JavaScript", "React"],
     },
     {
@@ -39,7 +40,7 @@ function App() {
       location: "Chandigarh",
       salary: "₹12,000/month",
       description: "Learn React while contributing to real projects.",
-      applyUrl: "https://example.com/internships",
+      applyUrl: "https://pgrkam.com/internships",
       skills: ["React", "JavaScript", "HTML"],
     },
     {
@@ -50,7 +51,7 @@ function App() {
       location: "Ludhiana, Punjab",
       salary: "₹2.5–4 LPA",
       description: "Help customers troubleshoot technical issues.",
-      applyUrl: "https://example.com/careers",
+      applyUrl: "https://pgrkam.com/careers",
       skills: ["Communication", "Troubleshooting", "Networking"],
     },
   ];
@@ -62,6 +63,7 @@ function App() {
     provider: "Demo Training Centre",
     duration: "6 weeks",
     skills: "HTML, CSS, JavaScript",
+    url: "https://developer.mozilla.org/en-US/docs/Learn_web_development",
   },
   {
     id: 2,
@@ -69,6 +71,7 @@ function App() {
     provider: "Demo Technology Academy",
     duration: "4 weeks",
     skills: "React, JavaScript",
+    url: "https://react.dev/learn",
   },
   {
     id: 3,
@@ -76,6 +79,7 @@ function App() {
     provider: "Demo Skills Institute",
     duration: "3 weeks",
     skills: "Networking, Troubleshooting",
+    url: "https://grow.google/certificates/it-support/",
   },
 ];
 
@@ -228,11 +232,15 @@ const [skillInput, setSkillInput] = useState("");
           <button
             className="nav-item"
             onClick={() => {
-              setShowSavedOnly(false);
-              document.querySelector(".jobs-section")?.scrollIntoView({
-                behavior: "smooth",
-              });
-            }}
+                setActiveSection("dashboard");
+                setShowSavedOnly(false);
+                setSearchTerm("");
+                setSelectedCategory("All");
+                setSelectedLocation("All Punjab");
+                document.querySelector(".jobs-section")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+}}
           >
             <span>⌕</span> Find Jobs
           </button>
@@ -245,22 +253,34 @@ const [skillInput, setSkillInput] = useState("");
             {showSavedOnly ? "All Jobs" : "Saved Jobs"}
           </button>
 
+<button
+  className={`nav-item ${activeSection === "nearby" ? "active" : ""}`}
+  onClick={() => {
+  setActiveSection("nearby");
+  setShowSavedOnly(false);
+  setSearchTerm("");
+  setSelectedCategory("All");
+  document.querySelector(".jobs-section")?.scrollIntoView({
+    behavior: "smooth",
+  });
+}}
+>
+  <span>◉</span> Nearby Opportunities
+</button>
           <button
-            className="nav-item"
-            onClick={() =>
-              alert("Nearby opportunities will be available in the next feature.")
-            }
-          >
-            <span>◉</span> Nearby Opportunities
-          </button>
+              className={`nav-item ${
+                activeSection === "skills" ? "active" : ""
+              }`}
+              onClick={() => {
+  setActiveSection("skills");
 
-          <button
-            className="nav-item"
-            onClick={() =>
-              alert("Skill development programs will be added in the next feature.")
-            }
-          >
-            <span>▤</span> Skill Development
+  document.querySelector(".programs-section")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}}
+            >
+              <span>▤</span> Skill Development
           </button>
         </nav>
 
@@ -328,7 +348,7 @@ const [skillInput, setSkillInput] = useState("");
               </button>
           
           <div className="location-filter">
-  <label htmlFor="job-location">Find jobs by location</label>
+  <label htmlFor="job-location">Select location for nearby opportunities</label>
 
   <select
     id="job-location"
@@ -458,11 +478,7 @@ const [skillInput, setSkillInput] = useState("");
         <button
           type="button"
           className="program-button"
-          onClick={() =>
-            alert(
-              `${program.title}\n\nProvider: ${program.provider}\nDuration: ${program.duration}\n\nThis is a demonstration program.`
-            )
-          }
+          onClick={() => window.open(program.url, "_blank")}
         >
           View Program
         </button>
@@ -475,14 +491,18 @@ const [skillInput, setSkillInput] = useState("");
           <div className="section-heading">
             <div>
               <h2>
-                {showSavedOnly
-                  ? "Your Saved Jobs"
-                  : "Featured Opportunities"}
+                {activeSection === "nearby"
+                  ? "Nearby Opportunities"
+                  : showSavedOnly
+                    ? "Your Saved Jobs"
+                    : "Featured Opportunities"}
               </h2>
               <p>
-                {showSavedOnly
-                  ? "Opportunities you've bookmarked."
-                  : "Explore roles that could be your next career move."}
+                {activeSection === "nearby"
+                  ? `Explore job opportunities in ${selectedLocation === "All Punjab" ? "Punjab" : selectedLocation}.`
+                  : showSavedOnly
+                    ? "Opportunities you've bookmarked."
+                    : "Explore roles that could be your next career move."}
               </p>
             </div>
           </div>
