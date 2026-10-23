@@ -312,7 +312,7 @@ const [skillInput, setSkillInput] = useState("");
 
             <button type="submit">Search Jobs</button>
           </form>
-
+            <br />
             <button
               type="button"
               onClick={() => {
