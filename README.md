@@ -13,7 +13,7 @@ This academic project demonstrates desktop application development and job disco
 - **Candidate Skills Profile:** Add and remove skills from a candidate profile.
 - **Skill Matching:** Calculate a rule-based percentage match between candidate skills and job requirements.
 - **Location Filtering:** Filter sample job opportunities by city.
-- **Skill Development:** Browse sample training and skill-development programs.
+- **Skill Development:** Browse sample training programs with links to external learning resources.
 - **Job Alerts:** Display an in-app demonstration alert containing job information.
 - **Local Storage:** Store saved jobs and candidate skills in the application's browser storage.
 - **Desktop Interface:** Run the React application inside an Electron desktop window.
@@ -174,7 +174,7 @@ After making frontend changes, Vite can update the interface during development.
 ## Current Limitations
 
 - Job listings and training programs use illustrative sample data.
-- External application links are placeholders and are not verified vacancy links.
+- Job listings use illustrative sample data. Apply Now opens the general PGRKAM private-jobs page and does not guarantee a direct application link for each sample vacancy.
 - Location filtering uses predefined cities rather than live GPS coordinates.
 - Skill matching is rule-based and does not use a trained machine-learning model.
 - Job alerts currently use an in-app demonstration alert; automatic live vacancy notifications are not implemented.
